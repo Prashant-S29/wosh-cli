@@ -1,0 +1,62 @@
+{
+	"name": "cli",
+	"version": "0.0.0",
+	"license": "MIT",
+	"bin": {
+		"wosh": "dist/cli.js"
+	},
+	"type": "module",
+	"engines": {
+		"node": ">=16"
+	},
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc --watch",
+		"test": "prettier --check . && xo && ava",
+		"update-name": "npm run build && npm unlink -g || true && npm link"
+	},
+	"files": [
+		"dist"
+	],
+	"dependencies": {
+		"@inkjs/ui": "^2.0.0",
+		"figlet": "^1.9.3",
+		"ink": "^6.3.1",
+		"meow": "^14.0.0",
+		"react": "^19.2.0"
+	},
+	"devDependencies": {
+		"@sindresorhus/tsconfig": "^8.0.1",
+		"@types/figlet": "^1.7.0",
+		"@types/ink": "^0.5.2",
+		"@types/react": "^19.2.2",
+		"@vdemedes/prettier-config": "^2.0.1",
+		"ava": "^6.4.1",
+		"chalk": "^5.6.2",
+		"eslint-config-xo-react": "^0.28.0",
+		"eslint-plugin-react": "^7.37.5",
+		"eslint-plugin-react-hooks": "^7.0.0",
+		"ink-testing-library": "^4.0.0",
+		"prettier": "^3.6.2",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.9.3",
+		"xo": "^0.60.0"
+	},
+	"ava": {
+		"extensions": {
+			"ts": "module",
+			"tsx": "module"
+		},
+		"nodeArguments": [
+			"--loader=ts-node/esm"
+		]
+	},
+	"xo": {
+		"extends": "xo-react",
+		"prettier": true,
+		"rules": {
+			"react/prop-types": "off"
+		}
+	},
+	"prettier": "@vdemedes/prettier-config"
+}
