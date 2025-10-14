@@ -1,13 +1,16 @@
 #!/usr/bin/env node
 
+import 'dotenv/config';
 import {render} from 'ink';
 import meow from 'meow';
+import React from 'react';
 
 // components
 import App from './app.js';
 import {Signup} from './auth/signup.js';
 import {Whoami} from './auth/whoami.js';
-
+import {Provider} from './components/common/Provider/Provider.js';
+import {Logout} from './auth/logout.js';
 
 const cli = meow(
 	`
@@ -39,17 +42,23 @@ const cli = meow(
 
 const [command, subcommand] = cli.input;
 
-// route commands
-if (command === 'auth' && subcommand === 'signup') {
-	render(<Signup />);
-} else if (command === 'auth' && subcommand === 'whoami') {
-	render(<Whoami />);
-} else if (command === 'auth' && subcommand === 'login') {
-	// TODO: implement login
-	console.log('Login coming soon!');
-} else if (command === 'auth' && subcommand === 'logout') {
-	// TODO: implement logout
-	console.log('Logout coming soon!');
-} else {
-	render(<App />);
-}
+// Router component to handle command routing
+const Router: React.FC = () => {
+	if (command === 'auth' && subcommand === 'signup') {
+		return <Signup mode="signup" />;
+	} else if (command === 'auth' && subcommand === 'whoami') {
+		return <Whoami />;
+	} else if (command === 'auth' && subcommand === 'login') {
+		return <Signup mode="login" />;
+	} else if (command === 'auth' && subcommand === 'logout') {
+		return <Logout />;
+	} else {
+		return <App />;
+	}
+};
+
+render(
+	<Provider>
+		<Router />
+	</Provider>,
+);

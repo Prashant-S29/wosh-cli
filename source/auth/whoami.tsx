@@ -1,98 +1,85 @@
-import React, {useState, useEffect} from 'react';
 import {Box, Text} from 'ink';
-import fs from 'fs/promises';
-import {existsSync} from 'fs';
-import os from 'os';
-import path from 'path';
+import React from 'react';
+import {getToken, removeToken} from '../utils/utils.token.js';
+import {GetSessionResponse} from '../types/auth/index.js';
 
-type ApiResponse<T> = {
-	data: T | null;
-	error: string | null;
-	message: string;
-};
-
-type UserProfile = {
-	id: string;
-	name: string;
-	email: string;
-};
-
-type FlowStep = 'loading' | 'success' | 'error' | 'not-logged-in';
-
-const CONFIG_DIR = path.join(os.homedir(), '.wosh');
-const CONFIG_FILE = path.join(CONFIG_DIR, 'config.json');
-
-// Mock API to fetch profile - replace with real implementation
-const mockFetchProfile = async (
-	token: string,
-): Promise<ApiResponse<UserProfile>> => {
-	console.log(token);
-
-	await new Promise(resolve => setTimeout(resolve, 1200));
-
-	// Simulate success
-	return {
-		data: {
-			id: 'usr_12345',
-			name: 'John Doe',
-			email: 'john@example.com',
-		},
-		error: null,
-		message: 'Profile fetched successfully',
-	};
-};
+type WhoamiStep =
+	| 'checking'
+	| 'not-logged-in'
+	| 'fetching'
+	| 'success'
+	| 'error';
 
 export const Whoami: React.FC = () => {
-	const [step, setStep] = useState<FlowStep>('loading');
-	const [profile, setProfile] = useState<UserProfile | null>(null);
-	const [error, setError] = useState<string | null>(null);
+	const [step, setStep] = React.useState<WhoamiStep>('checking');
+	const [sessionData, setSessionData] =
+		React.useState<GetSessionResponse | null>(null);
+	const [errorMessage, setErrorMessage] = React.useState<string>('');
 
-	useEffect(() => {
+	React.useEffect(() => {
+		const fetchProfile = async () => {
+			// Step 1: Check if token exists
+			const token = getToken();
+
+			if (!token) {
+				setStep('not-logged-in');
+				return;
+			}
+
+			// Step 2: Fetch session data
+			setStep('fetching');
+
+			try {
+				const sessionResponse = await fetch(
+					`${process.env['BACKEND_BASE_URL']}/api/auth/session`,
+					{
+						method: 'GET',
+						headers: {
+							'Content-Type': 'application/json',
+							Authorization: `Bearer ${token}`,
+						},
+					},
+				);
+
+				if (!sessionResponse.ok) {
+					setErrorMessage('Session expired or invalid. Please log in again.');
+					setStep('error');
+					return;
+				}
+
+				const sessionResult = await sessionResponse.json();
+
+				// Step 3: Check if we got valid data
+				if (!sessionResult.data?.session?.id || !sessionResult.data?.user?.id) {
+					setErrorMessage('Invalid session. Please log in again.');
+					setStep('error');
+					removeToken();
+					return;
+				}
+
+				// Step 4: Success
+				setSessionData(sessionResult.data);
+				setStep('success');
+			} catch (error) {
+				console.error('Whoami error:', error);
+				setErrorMessage(
+					error instanceof Error ? error.message : 'Network error',
+				);
+				removeToken();
+				setStep('error');
+			}
+		};
+
 		fetchProfile();
 	}, []);
 
-	const fetchProfile = async () => {
-		try {
-			// Check if config exists
-			if (!existsSync(CONFIG_FILE)) {
-				setStep('not-logged-in');
-				process.exit(0);
-			}
-
-			// Read config
-			const data = await fs.readFile(CONFIG_FILE, 'utf8');
-			const config = JSON.parse(data);
-
-			if (!config?.token) {
-				setStep('not-logged-in');
-				process.exit(0);
-			}
-
-			// Fetch profile using token
-			const response = await mockFetchProfile(config.token);
-
-			if (response.error || !response.data) {
-				setError(response.message);
-				setStep('error');
-				setTimeout(() => process.exit(1), 2500);
-			}
-
-			setProfile(response.data);
-			setStep('success');
-			process.exit(0);
-		} catch (err) {
-			setError('Failed to fetch profile');
-			setStep('error');
-			setTimeout(() => process.exit(1), 2500);
-		}
-	};
-
-	if (step === 'loading') {
+	// Render based on current step
+	if (step === 'checking') {
 		return (
-			<Box flexDirection="column" marginTop={1}>
+			<Box flexDirection="column" marginY={1}>
 				<Box>
-					<Text color="cyan"></Text>
-					<Text> fetching profile....</Text>
+					<Text color="cyan">⠙</Text>
+					<Text> Checking authentication status...</Text>
 				</Box>
 			</Box>
 		);
@@ -100,33 +87,57 @@ export const Whoami: React.FC = () => {
 
 	if (step === 'not-logged-in') {
 		return (
-			<Box flexDirection="column" marginTop={1}>
-				<Text color="yellow">You are not logged in.</Text>
+			<Box flexDirection="column" marginY={1}>
+				<Text color="yellow">⚠ You are not logged in.</Text>
 				<Box marginTop={1}>
-					<Text dimColor>Run </Text>
-					<Text color="cyan">wosh auth signup</Text>
-					<Text dimColor> to create an account</Text>
+					<Text>
+						Run <Text color="cyan">wosh auth signup</Text> to create an account.
+					</Text>
 				</Box>
+			</Box>
+		);
+	}
+
+	if (step === 'fetching') {
+		return (
+			<Box flexDirection="column" marginY={1}>
+				<Box>
+					<Text color="cyan">⠙</Text>
+					<Text> Fetching profile...</Text>
+				</Box>
+			</Box>
+		);
+	}
+
+	if (step === 'success' && sessionData) {
+		const userName =
+			sessionData.user.name || sessionData.user.email.split('@')[0];
+		const userEmail = sessionData.user.email;
+
+		return (
+			<Box flexDirection="column" marginY={1}>
+				<Text color="cyan">Username: {userName}</Text>
+				<Text color="gray">Email: {userEmail}</Text>
 			</Box>
 		);
 	}
 
 	if (step === 'error') {
 		return (
-			<Box flexDirection="column" marginTop={1}>
-				<Text color="red">Something went wrong</Text>
-				<Box paddingLeft={2} marginTop={1}>
-					<Text color="red">[error] : {error}</Text>
+			<Box flexDirection="column" marginY={1}>
+				<Box borderStyle="round" borderColor="red" paddingX={1}>
+					<Box flexDirection="column">
+						<Text color="red" bold>
+							✗ Something went wrong
+						</Text>
+						<Text color="red">{errorMessage}</Text>
+					</Box>
 				</Box>
-			</Box>
-		);
-	}
-
-	if (step === 'success' && profile) {
-		return (
-			<Box flexDirection="column" marginTop={1}>
-				<Text color="cyan">{profile.name}</Text>
-				<Text color="gray">{profile.email}</Text>
+				<Box marginTop={1}>
+					<Text>
+						Run <Text color="cyan">wosh auth signup</Text> to log in again.
+					</Text>
+				</Box>
 			</Box>
 		);
 	}
