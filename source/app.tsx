@@ -1,4 +1,5 @@
 import {Box, Text} from 'ink';
+import {Header} from './components/header.js';
 
 export default function App() {
 	const progress = 70;
@@ -9,7 +10,8 @@ export default function App() {
 
 	return (
 		<Box flexDirection="column" padding={1}>
-			<Box marginBottom={1}>
+			<Header />
+			<Box marginTop={1}>
 				<Text color="gray">Welcome to WoshVault!</Text>
 			</Box>
 

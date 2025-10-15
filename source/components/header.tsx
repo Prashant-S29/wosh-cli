@@ -1,7 +1,8 @@
 import chalk from 'chalk';
 import figlet from 'figlet';
+import {Text} from 'ink';
 
-export function getBanner(): string {
+export const Header: React.FC = () => {
 	const bannerText = figlet.textSync('WoshVault', {
 		font: 'Slant',
 		horizontalLayout: 'default',
@@ -24,5 +25,5 @@ export function getBanner(): string {
 		return colorFn ? colorFn(line) : line;
 	});
 
-	return gradientBody.join('\n');
-}
+	return <Text>{gradientBody.join('\n')}</Text>;
+};
