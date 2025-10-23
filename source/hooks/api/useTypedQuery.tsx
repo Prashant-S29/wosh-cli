@@ -1,6 +1,6 @@
 import {useQuery, UseQueryOptions, UseQueryResult} from '@tanstack/react-query';
 import {SafeApiResponse} from '../../types/index.js';
-import {getToken} from '../../utils/utils.token.js';
+import {getSessionToken} from '../../utils/token/utils.sessionToken.js';
 
 export type TypedQueryOptions<TResponse> = Omit<
 	UseQueryOptions<SafeApiResponse<TResponse>, never>,
@@ -48,7 +48,7 @@ export function useTypedQuery<TResponse>(
 				};
 
 				if (authRequired) {
-					const token = getToken();
+					const token = getSessionToken();
 					if (token) {
 						requestHeaders['Authorization'] = `Bearer ${token}`;
 					}
