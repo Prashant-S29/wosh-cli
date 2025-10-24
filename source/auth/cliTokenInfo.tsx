@@ -114,7 +114,8 @@ export const CLITokenInfo: React.FC = () => {
 				</Box>
 				<Box marginTop={1}>
 					<Text>
-						Use <Text color="cyan">wosh auth cli</Text> to set up a CLI token.
+						Use <Text color="cyan">wosh auth cli --token={'<token>'}</Text> to
+						set up a CLI token.
 					</Text>
 				</Box>
 			</Box>

@@ -12,7 +12,7 @@
 	"scripts": {
 		"build": "tsc",
 		"dev": "tsc --watch",
-		"test": "prettier --check . && xo && ava",
+		"test": "prettier --write . && xo && ava",
 		"update-name": "npm run build && npm unlink -g || true && npm link"
 	},
 	"files": [

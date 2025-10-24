@@ -5,6 +5,7 @@ import {
 	getCLIToken,
 	removeCLIToken,
 	isValidCLITokenFormat,
+	getEncryptedCLITokenBlob,
 } from '../utils/token/utils.cliToken.js';
 import {isAuthenticated} from '../hooks/auth/useAuth.js';
 
@@ -32,7 +33,7 @@ export const CLIToken: React.FC<CLITokenProps> = ({
 		const processToken = async () => {
 			if (mode === 'revoke') {
 				// For revoke mode, directly proceed to remove token
-				const existingToken = await getCLIToken();
+				const existingToken = await getEncryptedCLITokenBlob();
 				if (existingToken) {
 					const removed = removeCLIToken();
 					if (removed) {
@@ -117,7 +118,7 @@ export const CLIToken: React.FC<CLITokenProps> = ({
 				<Text>CLI token is already set</Text>
 				<Box marginTop={1}>
 					<Text>
-						Use <Text color="cyan">wosh auth cli revoke</Text> to remove the
+						Run <Text color="cyan">wosh auth cli revoke</Text> to remove the
 						token
 					</Text>
 				</Box>

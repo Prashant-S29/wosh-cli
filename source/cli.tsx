@@ -26,7 +26,7 @@ const cli = meow(
 	  $ wosh auth signup               create new account
 	  $ wosh auth logout               logout
 	  $ wosh auth whoami               show profile info
-	  $ wosh auth cli token=<token>    setup CLI token
+	  $ wosh auth cli --token=<token>    setup CLI token
 	  $ wosh auth cli info             show CLI token information
 	  $ wosh auth cli revoke           revoke CLI token
 
@@ -41,18 +41,16 @@ const cli = meow(
 	`,
 	{
 		importMeta: import.meta,
-		flags: {},
+		flags: {
+			token: {
+				type: 'string',
+				isRequired: false,
+			},
+		},
 	},
 );
 
 const [command, subcommand, action] = cli.input;
-
-// Helper function to parse token from action
-const parseToken = (action: string | undefined): string | undefined => {
-	if (!action) return undefined;
-	const match = action.match(/^token=(.+)$/);
-	return match ? match[1] : undefined;
-};
 
 // Router component to handle command routing
 const Router: React.FC = () => {
@@ -70,8 +68,8 @@ const Router: React.FC = () => {
 		} else if (action === 'info') {
 			return <CLITokenInfo />;
 		} else {
-			// Check if action contains token=<value>
-			const token = parseToken(action);
+			// Get token from flags
+			const token = cli.flags.token;
 			return <CLIToken mode="set" token={token} />;
 		}
 	} else {

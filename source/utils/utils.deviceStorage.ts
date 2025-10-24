@@ -519,6 +519,33 @@ export const getData = async (filename: string): Promise<string | null> => {
 };
 
 /**
+ * Retrieve the raw data and return without decryption
+ * @param filename - Name of the file to read from
+ * @returns Raw data or null if not found/error
+ */
+export const getRawData = async (filename: string): Promise<string | null> => {
+	try {
+		const configDir = getConfigDir();
+		const filePath = path.join(configDir, filename);
+
+		if (!fs.existsSync(filePath)) {
+			return null;
+		}
+
+		const rawData = fs.readFileSync(filePath, 'utf-8').trim();
+		// const data = await decryptData(encrypted);
+
+		return rawData;
+	} catch (error) {
+		console.error(
+			`Failed to retrieve data from ${filename}:`,
+			error instanceof Error ? error.message : 'Unknown error',
+		);
+		return null;
+	}
+};
+
+/**
  * Check if data exists
  * @param filename - Name of the file to check
  * @returns boolean indicating if file exists

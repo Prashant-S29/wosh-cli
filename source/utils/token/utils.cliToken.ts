@@ -3,6 +3,7 @@ import {
 	getData,
 	hasData,
 	removeData,
+	getRawData,
 } from '../utils.deviceStorage.js';
 import crypto from 'crypto';
 
@@ -49,6 +50,14 @@ export const saveCLIToken = async (token: string): Promise<boolean> => {
  */
 export const getCLIToken = async (): Promise<string | null> => {
 	return await getData(CLI_TOKEN_FILENAME);
+};
+
+/**
+ * Retrieve Encrypted CLI token blob
+ * @returns CLI encrypted token blob or null if not found
+ */
+export const getEncryptedCLITokenBlob = async (): Promise<string | null> => {
+	return await getRawData(CLI_TOKEN_FILENAME);
 };
 
 /**
