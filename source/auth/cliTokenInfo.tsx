@@ -46,7 +46,7 @@ export const CLITokenInfo: React.FC = () => {
 				}
 
 				// Step 3: Decrypt token
-				const decryptResult = await decryptCLIToken({token: encryptedToken});
+				const decryptResult = await decryptCLIToken(encryptedToken);
 
 				if (decryptResult.error || !decryptResult.data) {
 					setErrorMessage(
