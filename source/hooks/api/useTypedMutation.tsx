@@ -3,7 +3,7 @@ import {
 	BackendError,
 	BackendResponse,
 } from '../../types/index.js';
-import {getToken} from '../../utils/utils.token.js';
+import {getSessionToken} from '../../utils/token/utils.sessionToken.js';
 import {
 	useMutation,
 	UseMutationOptions,
@@ -47,7 +47,7 @@ export function useTypedMutation<TRequest, TResponse>(
 
 				// Add auth header if required
 				if (authRequired) {
-					const token = getToken();
+					const token = getSessionToken();
 					if (token) {
 						requestHeaders['Authorization'] = `Bearer ${token}`;
 					}

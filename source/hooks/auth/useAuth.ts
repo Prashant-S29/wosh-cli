@@ -1,49 +1,9 @@
 import {GetSessionResponse} from '../../types/auth/index.js';
-import {getToken, removeToken} from '../../utils/utils.token.js';
-
-// Type definitions (match your backend response)
-
-/**
- * Verify session with backend API
- */
-const verifySession = async (token: string) => {
-	try {
-		const response = await fetch(
-			`${process.env['BACKEND_BASE_URL']}/api/auth/session`,
-			{
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${token}`,
-				},
-			},
-		);
-
-		if (!response.ok) {
-			return {
-				data: null,
-				error: `Session verification failed: ${response.statusText}`,
-				message: 'Failed to verify session',
-			};
-		}
-
-		const data = await response.json();
-
-		// console
-
-		return {
-			data: data.data,
-			error: null,
-			message: 'Session verified successfully',
-		};
-	} catch (error) {
-		return {
-			data: null,
-			error: error instanceof Error ? error.message : 'Network error',
-			message: 'Failed to verify session',
-		};
-	}
-};
+import {
+	getSessionToken,
+	getSessionTokenData,
+	removeSessionToken,
+} from '../../utils/token/utils.sessionToken.js';
 
 /**
  * Check authentication status for CLI
@@ -52,7 +12,7 @@ const verifySession = async (token: string) => {
 export const useAuth = async () => {
 	try {
 		// Step 1: Check if token exists locally
-		const storedToken = getToken();
+		const storedToken = await getSessionToken();
 
 		if (!storedToken) {
 			return {
@@ -64,16 +24,12 @@ export const useAuth = async () => {
 		}
 
 		// Step 2: Verify token with backend
-		const sessionResponse = await verifySession(storedToken);
+		const sessionResponse = await getSessionTokenData();
 
 		// Step 3: Check if session data exists
-		if (
-			sessionResponse.error ||
-			!sessionResponse.data?.session?.id ||
-			!sessionResponse.data?.user?.id
-		) {
+		if (sessionResponse.error || !sessionResponse.data?.session?.id) {
 			// Token is invalid or expired, remove it
-			removeToken();
+			removeSessionToken();
 			return {
 				isAuthenticated: false,
 				token: null,
