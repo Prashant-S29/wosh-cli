@@ -6,6 +6,7 @@ import {
 	getRawData,
 } from '../utils.deviceStorage.js';
 import crypto from 'crypto';
+import {decryptKeys} from './utils.decryptionKeys.js';
 
 const CLI_TOKEN_FILENAME = 'cli-token';
 
@@ -77,64 +78,55 @@ export const removeCLIToken = (): boolean => {
 };
 
 interface CLITokenData {
-	masterPassphrase: string;
-	pin?: string;
+	hashKeys: string;
 	orgInfo: {id: string; name: string};
 	projectInfo: {id: string; name: string};
 }
 
 interface DecryptCLITokenResult {
-	data: CLITokenData | null;
+	data: {
+		masterPassphrase: string;
+		pin?: string;
+		orgInfo: {id: string; name: string};
+		projectInfo: {id: string; name: string};
+	} | null;
 	error: string | null;
 	message: string;
 }
 
-export async function decryptCLIToken({
-	token,
-}: {
-	token: string;
-}): Promise<DecryptCLITokenResult> {
+export async function decryptCLIToken(
+	token: string,
+): Promise<DecryptCLITokenResult> {
 	try {
 		const cliTokenHash = process.env['CLI_TOKEN_HASH'];
 
 		if (!cliTokenHash) {
-			console.error('CRITICAL: CLI_TOKEN_HASH environment variable is not set');
 			return {
 				data: null,
 				error: 'Server configuration error',
-				message: 'Failed to decrypt CLI token',
+				message: 'CLI_TOKEN_HASH environment variable is not set',
 			};
 		}
 
-		// Decode the token from URL-safe base64
+		// Decode the token
 		const combined = Buffer.from(token, 'base64url');
 
-		// Verify minimum length
-		const minLength = SALT_LENGTH + IV_LENGTH + AUTH_TAG_LENGTH + 1;
-		if (combined.length < minLength) {
-			return {
-				data: null,
-				error: 'Invalid token format',
-				message: 'Token is too short or corrupted',
-			};
-		}
-
-		// Extract components: salt + iv + encrypted + authTag
-		let offset = 0;
-		const salt = combined.subarray(offset, offset + SALT_LENGTH);
-		offset += SALT_LENGTH;
-
-		const iv = combined.subarray(offset, offset + IV_LENGTH);
-		offset += IV_LENGTH;
-
+		// Extract components
+		const salt = combined.subarray(0, SALT_LENGTH);
+		const iv = combined.subarray(SALT_LENGTH, SALT_LENGTH + IV_LENGTH);
 		const authTag = combined.subarray(combined.length - AUTH_TAG_LENGTH);
 		const encrypted = combined.subarray(
-			offset,
+			SALT_LENGTH + IV_LENGTH,
 			combined.length - AUTH_TAG_LENGTH,
 		);
 
-		// Derive the same key using CLI_TOKEN_HASH and extracted salt
-		const key = crypto.scryptSync(cliTokenHash, salt, 32);
+		// Derive the same key
+		const key = crypto.scryptSync(cliTokenHash, salt, 32, {
+			N: 16384,
+			r: 8,
+			p: 1,
+			maxmem: 64 * 1024 * 1024,
+		});
 
 		const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
 		decipher.setAuthTag(authTag);
@@ -145,21 +137,35 @@ export async function decryptCLIToken({
 			decipher.final(),
 		]);
 
-		// Parse JSON
-		const tokenData: CLITokenData = JSON.parse(decrypted.toString('utf8'));
+		const tokenData = JSON.parse(decrypted.toString('utf8')) as CLITokenData;
+
+		// decrypt keys
+		const keys = decryptKeys(tokenData.hashKeys);
+
+		if (keys.error || !keys.data) {
+			return {
+				data: null,
+				error: keys.error,
+				message: keys.message,
+			};
+		}
 
 		return {
-			data: tokenData,
+			data: {
+				masterPassphrase: keys.data.masterPassphrase,
+				pin: keys.data.pin,
+				orgInfo: tokenData.orgInfo,
+				projectInfo: tokenData.projectInfo,
+			},
 			error: null,
-			message: 'CLI token decrypted successfully',
+			message: 'Success',
 		};
 	} catch (error) {
 		console.error('Failed to decrypt CLI token:', error);
 		return {
 			data: null,
-			error:
-				error instanceof Error ? error.message : 'Failed to decrypt CLI token',
-			message: 'Invalid or corrupted CLI token',
+			error: 'Invalid or expired token',
+			message: 'Failed to decrypt CLI token',
 		};
 	}
 }
