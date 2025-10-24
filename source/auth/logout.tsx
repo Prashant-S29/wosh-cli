@@ -1,7 +1,12 @@
 import {Box, Text} from 'ink';
 import React from 'react';
-import {getToken, removeToken} from '../utils/utils.token.js';
+import {
+	getSessionToken,
+	removeSessionToken,
+} from '../utils/token/utils.sessionToken.js';
 import {useTypedMutation} from '../hooks/api/useTypedMutation.js';
+import {GetSessionResponse} from '../types/auth/index.js';
+import {SafeApiResponse} from '../types/index.js';
 
 type SignoutResponse = {
 	success: boolean;
@@ -30,7 +35,7 @@ export const Logout: React.FC = () => {
 	React.useEffect(() => {
 		const performLogout = async () => {
 			// Step 1: Check if token exists
-			const token = getToken();
+			const token = await getSessionToken();
 
 			if (!token) {
 				setStep('not-logged-in');
@@ -55,17 +60,18 @@ export const Logout: React.FC = () => {
 				// Step 3: Check if token is valid
 				if (!sessionResponse.ok) {
 					// Token is expired or invalid, simply delete it
-					removeToken();
+					removeSessionToken();
 					setStep('success');
 					return;
 				}
 
-				const sessionData = await sessionResponse.json();
+				const sessionData =
+					(await sessionResponse.json()) as SafeApiResponse<GetSessionResponse>;
 
 				// Step 4: Verify we got valid session data
-				if (!sessionData?.session?.id || !sessionData?.user?.id) {
+				if (!sessionData?.data?.session?.id || !sessionData?.data?.user?.id) {
 					// Token is invalid, simply delete it
-					removeToken();
+					removeSessionToken();
 					setStep('success');
 					return;
 				}
@@ -85,7 +91,7 @@ export const Logout: React.FC = () => {
 					}
 
 					// Step 6: Signout successful, remove token
-					removeToken();
+					removeSessionToken();
 					setStep('success');
 				} catch (error) {
 					setErrorMessage(
@@ -102,7 +108,7 @@ export const Logout: React.FC = () => {
 			}
 		};
 
-		performLogout();
+		void performLogout();
 	}, []);
 
 	// Render based on current step

@@ -1,7 +1,11 @@
 import {Box, Text} from 'ink';
 import React from 'react';
-import {getToken, removeToken} from '../utils/utils.token.js';
+import {
+	getSessionToken,
+	removeSessionToken,
+} from '../utils/token/utils.sessionToken.js';
 import {GetSessionResponse} from '../types/auth/index.js';
+import {SafeApiResponse} from '../types/index.js';
 
 type WhoamiStep =
 	| 'checking'
@@ -19,7 +23,7 @@ export const Whoami: React.FC = () => {
 	React.useEffect(() => {
 		const fetchProfile = async () => {
 			// Step 1: Check if token exists
-			const token = getToken();
+			const token = await getSessionToken();
 
 			if (!token) {
 				setStep('not-logged-in');
@@ -47,13 +51,14 @@ export const Whoami: React.FC = () => {
 					return;
 				}
 
-				const sessionResult = await sessionResponse.json();
+				const sessionResult =
+					(await sessionResponse.json()) as SafeApiResponse<GetSessionResponse>;
 
 				// Step 3: Check if we got valid data
 				if (!sessionResult.data?.session?.id || !sessionResult.data?.user?.id) {
 					setErrorMessage('Invalid session. Please log in again.');
 					setStep('error');
-					removeToken();
+					removeSessionToken();
 					return;
 				}
 
@@ -65,12 +70,12 @@ export const Whoami: React.FC = () => {
 				setErrorMessage(
 					error instanceof Error ? error.message : 'Network error',
 				);
-				removeToken();
+				removeSessionToken();
 				setStep('error');
 			}
 		};
 
-		fetchProfile();
+		void fetchProfile();
 	}, []);
 
 	// Render based on current step

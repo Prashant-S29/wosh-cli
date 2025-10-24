@@ -2,7 +2,7 @@ import {Box, Text} from 'ink';
 import React from 'react';
 import TextInput from 'ink-text-input';
 import {SignupData} from '../types/auth/index.js';
-import {saveToken} from '../utils/utils.token.js';
+import {saveSessionToken} from '../utils/token/utils.sessionToken.js';
 import {isAuthenticated} from '../hooks/auth/useAuth.js';
 import {useTypedMutation} from '../hooks/api/useTypedMutation.js';
 
@@ -75,7 +75,7 @@ export const Signup: React.FC<SignupProps> = ({mode}) => {
 				setStep('email');
 			}
 		};
-		checkAuthStatus();
+		void checkAuthStatus();
 	}, []);
 
 	const handleEmailSubmit = async (value: string) => {
@@ -126,7 +126,7 @@ export const Signup: React.FC<SignupProps> = ({mode}) => {
 				setStep('error');
 			} else {
 				// Save token securely
-				const tokenSaved = saveToken(response.data.token);
+				const tokenSaved = await saveSessionToken(response.data.token);
 				if (tokenSaved) {
 					setStep('success');
 				} else {
