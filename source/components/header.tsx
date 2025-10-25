@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import figlet from 'figlet';
 import {Text} from 'ink';
+import React from 'react';
 
 export const Header: React.FC = () => {
 	const bannerText = figlet.textSync('WoshVault', {

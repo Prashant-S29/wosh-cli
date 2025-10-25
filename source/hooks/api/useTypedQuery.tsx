@@ -32,9 +32,7 @@ export function useTypedQuery<TResponse>(
 	return useQuery<SafeApiResponse<TResponse>, never>({
 		queryFn: async (): Promise<SafeApiResponse<TResponse>> => {
 			try {
-				const url = new URL(
-					`${process.env['NEXT_PUBLIC_BACKEND_BASE_URL']}${endpoint}`,
-				);
+				const url = new URL(`${process.env['BACKEND_BASE_URL']}${endpoint}`);
 
 				Object.entries(params).forEach(([key, value]) => {
 					if (value !== undefined && value !== null) {
@@ -48,7 +46,7 @@ export function useTypedQuery<TResponse>(
 				};
 
 				if (authRequired) {
-					const token = getSessionToken();
+					const token = await getSessionToken();
 					if (token) {
 						requestHeaders['Authorization'] = `Bearer ${token}`;
 					}
