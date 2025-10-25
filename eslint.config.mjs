@@ -2,6 +2,7 @@ import js from '@eslint/js';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
+import prettierConfig from 'eslint-config-prettier';
 
 export default [
 	// Ignore patterns
@@ -158,4 +159,5 @@ export default [
 			'@typescript-eslint/no-non-null-assertion': 'warn',
 		},
 	},
+	...prettierConfig,
 ];
