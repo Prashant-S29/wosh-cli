@@ -79,16 +79,16 @@ export const removeCLIToken = (): boolean => {
 
 interface CLITokenData {
 	hashKeys: string;
-	orgInfo: {id: string; name: string};
-	projectInfo: {id: string; name: string};
+	orgId: string;
+	projectId: string;
 }
 
 interface DecryptCLITokenResult {
 	data: {
 		masterPassphrase: string;
 		pin?: string;
-		orgInfo: {id: string; name: string};
-		projectInfo: {id: string; name: string};
+		orgId: string;
+		projectId: string;
 	} | null;
 	error: string | null;
 	message: string;
@@ -154,8 +154,8 @@ export async function decryptCLIToken(
 			data: {
 				masterPassphrase: keys.data.masterPassphrase,
 				pin: keys.data.pin,
-				orgInfo: tokenData.orgInfo,
-				projectInfo: tokenData.projectInfo,
+				orgId: tokenData.orgId,
+				projectId: tokenData.projectId,
 			},
 			error: null,
 			message: 'Success',

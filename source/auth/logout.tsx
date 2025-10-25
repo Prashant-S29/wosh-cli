@@ -109,6 +109,7 @@ export const Logout: React.FC = () => {
 		};
 
 		void performLogout();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	// Render based on current step

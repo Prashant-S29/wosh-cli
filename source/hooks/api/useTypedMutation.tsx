@@ -18,8 +18,6 @@ export type TypedMutationOptions<TRequest, TResponse> = Omit<
 	method?: 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 	headers?: Record<string, string>;
 	authRequired?: boolean;
-	transformRequest?: (data: TRequest) => unknown;
-	transformResponse?: (data: unknown) => TResponse;
 };
 
 export function useTypedMutation<TRequest, TResponse>(
@@ -30,15 +28,13 @@ export function useTypedMutation<TRequest, TResponse>(
 		method = 'POST',
 		headers = {},
 		authRequired = true,
-		transformRequest,
-		transformResponse,
 		...mutationOptions
 	} = options;
 
 	return useMutation<SafeApiResponse<TResponse>, never, TRequest>({
 		mutationFn: async (data: TRequest): Promise<SafeApiResponse<TResponse>> => {
 			try {
-				const requestBody = transformRequest ? transformRequest(data) : data;
+				const requestBody = data;
 
 				const requestHeaders: Record<string, string> = {
 					'Content-Type': 'application/json',
@@ -47,7 +43,7 @@ export function useTypedMutation<TRequest, TResponse>(
 
 				// Add auth header if required
 				if (authRequired) {
-					const token = getSessionToken();
+					const token = await getSessionToken();
 					if (token) {
 						requestHeaders['Authorization'] = `Bearer ${token}`;
 					}
@@ -89,23 +85,14 @@ export function useTypedMutation<TRequest, TResponse>(
 						message?: string;
 					};
 
-					const transformedData =
-						transformResponse && apiResponse.data
-							? transformResponse(apiResponse.data)
-							: (apiResponse.data as TResponse);
-
 					return {
-						data: transformedData,
+						data: apiResponse.data as TResponse,
 						error: apiResponse.error || null,
 						message: apiResponse.message || 'Success',
 					};
 				} else {
-					const transformedData = transformResponse
-						? transformResponse(responseData)
-						: (responseData as TResponse);
-
 					return {
-						data: transformedData,
+						data: responseData as TResponse,
 						error: null,
 						message: 'Success',
 					};

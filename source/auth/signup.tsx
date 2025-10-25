@@ -3,8 +3,8 @@ import React from 'react';
 import TextInput from 'ink-text-input';
 import {SignupData} from '../types/auth/index.js';
 import {saveSessionToken} from '../utils/token/utils.sessionToken.js';
-import {isAuthenticated} from '../hooks/auth/useAuth.js';
 import {useTypedMutation} from '../hooks/api/useTypedMutation.js';
+import {getAuth} from '../utils/auth/getAuth.js';
 
 // API Request/Response Types
 type SignupRequest = {
@@ -68,8 +68,8 @@ export const Signup: React.FC<SignupProps> = ({mode}) => {
 	// Check auth status on mount
 	React.useEffect(() => {
 		const checkAuthStatus = async () => {
-			const authenticated = await isAuthenticated();
-			if (authenticated) {
+			const {isAuthenticated} = await getAuth();
+			if (isAuthenticated) {
 				setStep('already-logged-in');
 			} else {
 				setStep('email');

@@ -3,7 +3,7 @@
 	"version": "0.0.0",
 	"license": "MIT",
 	"bin": {
-		"wosh": "dist/cli.js"
+		"wosh": "dist/source/cli.js"
 	},
 	"type": "module",
 	"engines": {
@@ -13,7 +13,10 @@
 		"build": "tsc",
 		"dev": "tsc --watch",
 		"test": "prettier --write . && xo && ava",
-		"update-name": "npm run build && npm unlink -g || true && npm link"
+		"format": "prettier --write \"**/*.{js,jsx,ts,tsx,css,md,json,html}\"",
+		"update-name": "npm run build && npm unlink -g || true && npm link",
+		"typecheck": "tsc --noEmit",
+		"lint": "eslint ."
 	},
 	"files": [
 		"dist"
@@ -31,18 +34,23 @@
 		"react": "^19.2.0"
 	},
 	"devDependencies": {
+		"@eslint/js": "^9.38.0",
 		"@sindresorhus/tsconfig": "^8.0.1",
 		"@types/figlet": "^1.7.0",
 		"@types/ink": "^0.5.2",
 		"@types/react": "^19.2.2",
+		"@typescript-eslint/eslint-plugin": "^8.46.2",
+		"@typescript-eslint/parser": "^8.46.2",
 		"@vdemedes/prettier-config": "^2.0.1",
 		"ava": "^6.4.1",
 		"chalk": "^5.6.2",
+		"eslint": "^9.38.0",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-config-xo-react": "^0.28.0",
 		"eslint-plugin-prettier": "^5.5.4",
 		"eslint-plugin-react": "^7.37.5",
-		"eslint-plugin-react-hooks": "^7.0.0",
+		"eslint-plugin-react-hooks": "^7.0.1",
+		"globals": "^16.4.0",
 		"ink-testing-library": "^4.0.0",
 		"prettier": "^3.6.2",
 		"ts-node": "^10.9.2",

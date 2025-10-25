@@ -7,7 +7,7 @@ import {
 	isValidCLITokenFormat,
 	getEncryptedCLITokenBlob,
 } from '../utils/token/utils.cliToken.js';
-import {isAuthenticated} from '../hooks/auth/useAuth.js';
+import {getAuth} from '../utils/auth/getAuth.js';
 
 type CLITokenStep =
 	| 'checking'
@@ -56,9 +56,10 @@ export const CLIToken: React.FC<CLITokenProps> = ({
 					return;
 				}
 
+				const {isAuthenticated} = await getAuth();
+
 				// Check user is authenticated
-				const isUserAuthenticated = await isAuthenticated();
-				if (!isUserAuthenticated) {
+				if (!isAuthenticated) {
 					setWarningMessage('Please login to continue');
 					setStep('warning');
 					return;

@@ -1,15 +1,10 @@
-import {GetSessionResponse} from '../../types/auth/index.js';
 import {
 	getSessionToken,
 	getSessionTokenData,
 	removeSessionToken,
-} from '../../utils/token/utils.sessionToken.js';
+} from '../token/utils.sessionToken.js';
 
-/**
- * Check authentication status for CLI
- * Checks if token exists, validates it with backend, and returns auth status
- */
-export const useAuth = async () => {
+export const getAuth = async () => {
 	try {
 		// Step 1: Check if token exists locally
 		const storedToken = await getSessionToken();
@@ -54,20 +49,4 @@ export const useAuth = async () => {
 			error: error instanceof Error ? error.message : 'Unknown error',
 		};
 	}
-};
-
-/**
- * Get user session data (when already authenticated)
- */
-export const getSession = async (): Promise<GetSessionResponse | null> => {
-	const authResult = await useAuth();
-	return authResult.session;
-};
-
-/**
- * Check if user is authenticated (simple boolean check)
- */
-export const isAuthenticated = async (): Promise<boolean> => {
-	const authResult = await useAuth();
-	return authResult.isAuthenticated;
 };
