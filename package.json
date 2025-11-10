@@ -1,6 +1,6 @@
 {
 	"name": "wosh-cli",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "CLI to interact with Wosh - A local first secret management tool",
 	"license": "MIT",
 	"author": "Prashant Singh prashant.s2922@gmail.com",
