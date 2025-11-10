@@ -1,7 +1,8 @@
 {
 	"extends": "@sindresorhus/tsconfig",
 	"compilerOptions": {
-		"outDir": "dist"
+		"outDir": "dist",
+		"rootDir": "."
 	},
-	"include": ["source", "global.d.ts", "test.tsx", "*.test.ts", "*.test.tsx"]
+	"include": ["source/**/*"]
 }
