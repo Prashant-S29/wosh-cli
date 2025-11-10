@@ -1,7 +1,19 @@
 {
-	"name": "cli",
-	"version": "0.0.0",
+	"name": "wosh-cli",
+	"version": "0.0.1",
+	"description": "CLI to interact with Wosh - A local first secret management tool",
 	"license": "MIT",
+	"author": "Prashant Singh prashant.s2922@gmail.com",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Prashant-S29/wosh-cli"
+	},
+	"keywords": [
+		"cli",
+		"secrets",
+		"environment",
+		"wosh"
+	],
 	"bin": {
 		"wosh": "dist/source/cli.js"
 	},
@@ -23,6 +35,8 @@
 	],
 	"dependencies": {
 		"@inkjs/ui": "^2.0.0",
+		"@noble/curves": "^2.0.1",
+		"@noble/hashes": "^2.0.1",
 		"@tanstack/react-query": "^5.90.2",
 		"dotenv": "^17.2.3",
 		"figlet": "^1.9.3",

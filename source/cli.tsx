@@ -13,6 +13,7 @@ import {Provider} from './components/common/Provider/Provider.js';
 import {Logout} from './auth/logout.js';
 import {CLIToken} from './auth/cliToken.js';
 import {CLITokenInfo} from './auth/cliTokenInfo.js';
+import {Run} from './run/run.js';
 
 const cli = meow(
 	`
@@ -22,13 +23,18 @@ const cli = meow(
 	Commands
 
 	auth
-	  $ wosh auth login                login into your account
-	  $ wosh auth signup               create new account
-	  $ wosh auth logout               logout
-	  $ wosh auth whoami               show profile info
-	  $ wosh auth cli --token=<token>    setup CLI token
-	  $ wosh auth cli info             show CLI token information
-	  $ wosh auth cli revoke           revoke CLI token
+	  $ wosh auth login                      login into your account
+	  $ wosh auth signup                     create new account
+	  $ wosh auth logout                     logout
+	  $ wosh auth whoami                     show profile info
+	  $ wosh auth cli --token=<token>        setup CLI token
+	  $ wosh auth cli info                   show CLI token information
+	  $ wosh auth cli revoke                 revoke CLI token
+
+	run
+	  $ wosh run                             fetch and decrypt secrets (display only)
+	  $ wosh run --command="npm run dev"     run command with injected secrets
+	  $ wosh run --command="npm run dev" --watch     run command and show secret keys being used
 
 	organization
 	  (coming soon)
@@ -38,6 +44,13 @@ const cli = meow(
 
 	secret
 	  (coming soon)
+
+	Examples
+	  $ wosh run                                     # Display all secrets
+	  $ wosh run --command="npm run dev"     # Run dev server with secrets
+	  $ wosh run --command="npm run dev" --watch     # Run and show which secrets are used
+	  $ wosh run --command="node app.js"     # Run Node.js app with secrets
+	  $ wosh run --command="build && test"   # Run multiple commands
 	`,
 	{
 		importMeta: import.meta,
@@ -45,6 +58,15 @@ const cli = meow(
 			token: {
 				type: 'string',
 				isRequired: false,
+			},
+			command: {
+				type: 'string',
+				isRequired: false,
+			},
+			watch: {
+				type: 'boolean',
+				isRequired: false,
+				default: false,
 			},
 		},
 	},
@@ -72,6 +94,11 @@ const Router: React.FC = () => {
 			const token = cli.flags.token;
 			return <CLIToken mode="set" token={token} />;
 		}
+	} else if (command === 'run') {
+		// Pass command flag and watch flag to Run component
+		const commandToRun = cli.flags.command;
+		const watch = cli.flags.watch;
+		return <Run command={commandToRun} watch={watch} />;
 	} else {
 		return <App />;
 	}

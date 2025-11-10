@@ -1,0 +1,13 @@
+source/
+*.tsx
+*.ts
+!dist/**/*.d.ts
+.env
+.env.*
+.gitattributes
+.prettierignore
+eslint.config.mjs
+prettier.config.mjs
+tsconfig.json
+node_modules/
+.git/
