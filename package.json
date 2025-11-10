@@ -15,7 +15,7 @@
 		"wosh"
 	],
 	"bin": {
-		"wosh": "dist/source/cli.js"
+		"wosh-cli": "dist/source/cli.js"
 	},
 	"type": "module",
 	"engines": {
