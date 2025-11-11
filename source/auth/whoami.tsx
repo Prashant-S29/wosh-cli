@@ -6,6 +6,7 @@ import {
 } from '../utils/token/utils.sessionToken.js';
 import {GetSessionResponse} from '../types/auth/index.js';
 import {SafeApiResponse} from '../types/index.js';
+import { BACKEND_BASE_URL } from '../constants/index.js';
 
 type WhoamiStep =
 	| 'checking'
@@ -35,7 +36,7 @@ export const Whoami: React.FC = () => {
 
 			try {
 				const sessionResponse = await fetch(
-					`${process.env['BACKEND_BASE_URL']}/api/auth/session`,
+					`${BACKEND_BASE_URL}/api/auth/session`,
 					{
 						method: 'GET',
 						headers: {

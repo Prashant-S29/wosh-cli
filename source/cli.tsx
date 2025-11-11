@@ -18,23 +18,23 @@ import {Run} from './run/run.js';
 const cli = meow(
 	`
 	Usage
-	  $ wosh-cli <command> <subcommand> [action]
+	  $ wosh <command> <subcommand> [action]
 
 	Commands
 
 	auth
-	  $ wosh-cli auth login                      login into your account
-	  $ wosh-cli auth signup                     create new account
-	  $ wosh-cli auth logout                     logout
-	  $ wosh-cli auth whoami                     show profile info
-	  $ wosh-cli auth cli --token=<token>        setup CLI token
-	  $ wosh-cli auth cli info                   show CLI token information
-	  $ wosh-cli auth cli revoke                 revoke CLI token
+	  $ wosh auth login                      login into your account
+	  $ wosh auth signup                     create new account
+	  $ wosh auth logout                     logout
+	  $ wosh auth whoami                     show profile info
+	  $ wosh auth cli --token=<token>        setup CLI token
+	  $ wosh auth cli info                   show CLI token information
+	  $ wosh auth cli revoke                 revoke CLI token
 
 	run
-	  $ wosh-cli run                             fetch and decrypt secrets (display only)
-	  $ wosh-cli run --command="npm run dev"     run command with injected secrets
-	  $ wosh-cli run --command="npm run dev" --watch     run command and show secret keys being used
+	  $ wosh run                             fetch and decrypt secrets (display only)
+	  $ wosh run --command="npm run dev"     run command with injected secrets
+	  $ wosh run --command="npm run dev" --watch     run command and show secret keys being used
 
 	organization
 	  (coming soon)
@@ -46,11 +46,11 @@ const cli = meow(
 	  (coming soon)
 
 	Examples
-	  $ wosh-cli run                                     # Display all secrets
-	  $ wosh-cli run --command="npm run dev"     # Run dev server with secrets
-	  $ wosh-cli run --command="npm run dev" --watch     # Run and show which secrets are used
-	  $ wosh-cli run --command="node app.js"     # Run Node.js app with secrets
-	  $ wosh-cli run --command="build && test"   # Run multiple commands
+	  $ wosh run                                     # Display all secrets
+	  $ wosh run --command="npm run dev"     # Run dev server with secrets
+	  $ wosh run --command="npm run dev" --watch     # Run and show which secrets are used
+	  $ wosh run --command="node app.js"     # Run Node.js app with secrets
+	  $ wosh run --command="build && test"   # Run multiple commands
 	`,
 	{
 		importMeta: import.meta,

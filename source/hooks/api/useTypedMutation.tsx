@@ -1,3 +1,4 @@
+import {BACKEND_BASE_URL} from '../../constants/index.js';
 import {
 	SafeApiResponse,
 	BackendError,
@@ -49,14 +50,11 @@ export function useTypedMutation<TRequest, TResponse>(
 					}
 				}
 
-				const response = await fetch(
-					`${process.env['BACKEND_BASE_URL']}${endpoint}`,
-					{
-						method,
-						headers: requestHeaders,
-						body: JSON.stringify(requestBody),
-					},
-				);
+				const response = await fetch(`${BACKEND_BASE_URL}${endpoint}`, {
+					method,
+					headers: requestHeaders,
+					body: JSON.stringify(requestBody),
+				});
 
 				const responseData: unknown = await response.json();
 				if (!response.ok) {

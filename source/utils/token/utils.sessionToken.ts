@@ -1,3 +1,4 @@
+import { BACKEND_BASE_URL } from '../../constants/index.js';
 import {GetSessionResponse} from '../../types/auth/index.js';
 import {SafeApiResponse} from '../../types/index.js';
 import {
@@ -55,7 +56,7 @@ export const getSessionTokenData = async () => {
 		}
 
 		const sessionResponse = await fetch(
-			`${process.env['BACKEND_BASE_URL']}/api/auth/session`,
+			`${BACKEND_BASE_URL}/api/auth/session`,
 			{
 				method: 'GET',
 				headers: {

@@ -91,7 +91,8 @@ const ensureConfigDir = (): void => {
 
 // Get salt from environment variable
 const getSalt = (): Buffer => {
-	const saltHex = process.env['DEVICE_STORAGE_SALT'];
+	const saltHex =
+		'b79f8988bbe3eff5a3c996670623d3483c75e1b6b89e101e9250e02a4b76a752';
 
 	if (!saltHex) {
 		throw new Error(

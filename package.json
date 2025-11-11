@@ -1,6 +1,6 @@
 {
-	"name": "wosh-cli",
-	"version": "0.0.5",
+	"name": "wosh",
+	"version": "1.0.0",
 	"description": "CLI to interact with Wosh - A local first secret management tool",
 	"license": "MIT",
 	"author": "Prashant Singh prashant.s2922@gmail.com",
@@ -15,7 +15,7 @@
 		"wosh"
 	],
 	"bin": {
-		"wosh-cli": "dist/source/cli.js"
+		"wosh": "dist/source/cli.js"
 	},
 	"type": "module",
 	"engines": {

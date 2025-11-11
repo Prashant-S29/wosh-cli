@@ -7,6 +7,7 @@ import {
 import {useTypedMutation} from '../hooks/api/useTypedMutation.js';
 import {GetSessionResponse} from '../types/auth/index.js';
 import {SafeApiResponse} from '../types/index.js';
+import { BACKEND_BASE_URL } from '../constants/index.js';
 
 type SignoutResponse = {
 	success: boolean;
@@ -47,7 +48,7 @@ export const Logout: React.FC = () => {
 			try {
 				// Step 2: Verify token with backend
 				const sessionResponse = await fetch(
-					`${process.env['BACKEND_BASE_URL']}/api/auth/session`,
+					`${BACKEND_BASE_URL}/api/auth/session`,
 					{
 						method: 'GET',
 						headers: {

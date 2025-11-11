@@ -1,6 +1,7 @@
 import {useQuery, UseQueryOptions, UseQueryResult} from '@tanstack/react-query';
 import {SafeApiResponse} from '../../types/index.js';
 import {getSessionToken} from '../../utils/token/utils.sessionToken.js';
+import { BACKEND_BASE_URL } from '../../constants/index.js';
 
 export type TypedQueryOptions<TResponse> = Omit<
 	UseQueryOptions<SafeApiResponse<TResponse>, never>,
@@ -32,7 +33,7 @@ export function useTypedQuery<TResponse>(
 	return useQuery<SafeApiResponse<TResponse>, never>({
 		queryFn: async (): Promise<SafeApiResponse<TResponse>> => {
 			try {
-				const url = new URL(`${process.env['BACKEND_BASE_URL']}${endpoint}`);
+				const url = new URL(`${BACKEND_BASE_URL}${endpoint}`);
 
 				Object.entries(params).forEach(([key, value]) => {
 					if (value !== undefined && value !== null) {

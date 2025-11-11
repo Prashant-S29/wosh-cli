@@ -4,6 +4,7 @@ import {hkdf} from '@noble/hashes/hkdf.js';
 import {sha256} from '@noble/hashes/sha2.js';
 
 import {getAuth} from '../auth/getAuth.js';
+import { BACKEND_BASE_URL } from '../../constants/index.js';
 
 interface ProjectKeyCredentials {
 	masterPassphrase: string;
@@ -457,7 +458,7 @@ async function fetchOrgKeysFromServer(
 		}
 
 		const response = await fetch(
-			`${process.env['BACKEND_BASE_URL']}/api/organization/keys?orgId=${organizationId}`,
+			`${BACKEND_BASE_URL}/api/organization/keys?orgId=${organizationId}`,
 			{
 				headers: {
 					Authorization: `Bearer ${token}`,
@@ -531,7 +532,7 @@ async function fetchProjectKeysFromServer(
 		}
 
 		const response = await fetch(
-			`${process.env['BACKEND_BASE_URL']}/api/project/keys?orgId=${organizationId}&projectId=${projectId}`,
+			`${BACKEND_BASE_URL}/api/project/keys?orgId=${organizationId}&projectId=${projectId}`,
 			{
 				headers: {
 					Authorization: `Bearer ${token}`,
